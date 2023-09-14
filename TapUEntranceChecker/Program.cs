@@ -16,41 +16,47 @@ namespace TapUEntranceChecker
         private static int maxNumberOfStudents = 1000; // move to config file
         static void Main(string[] args)
         {
-            // Check if appsettings.json file exists
-            if (!File.Exists("appsettings.json"))
+            try
             {
-                Console.WriteLine("Error: The 'appsettings.json' file is missing.");
-                return;
-            }
-
-            // Setup configuration
-            IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
-
-            // Read configuration values with null validation and default values
-            totalScoreThreshold = config.GetValue<int>("PassingCriteria:TotalScoreThreshold", 350);
-            scienceSubjectThreshold = config.GetValue<int>("PassingCriteria:ScienceSubjectThreshold", 160);
-            humanitiesSubjectThreshold = config.GetValue<int>("PassingCriteria:HumanitiesSubjectThreshold", 160);
-            subjectCount = config.GetValue<int>("PassingCriteria:SubjectCount", 5);
-            scienceDivision = config.GetValue<string>("ScienceDivision", "s");
-            humanitiesDivision = config.GetValue<string>("HumanitiesDivision", "l");          
-
-            // Get the number of passing candidates
-            while (true)
-            {
-                GetPassingCandidates();
-
-                // Ask if the user wants to continue
-                Console.Write("Do you want to process another cycle of examinees? (y/n): ");
-                string response = Console.ReadLine().Trim().ToLower();
-
-                if (response != "y")
+                // Check if appsettings.json file exists
+                if (!File.Exists("appsettings.json"))
                 {
-                    break; // Exit the loop if the user enters anything other than "y"
+                    Console.WriteLine("Error: The 'appsettings.json' file is missing.");
+                    return;
                 }
-            }            
 
+                // Setup configuration
+                IConfiguration config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build();
+
+                // Read configuration values with null validation and default values
+                totalScoreThreshold = config.GetValue<int>("PassingCriteria:TotalScoreThreshold", 350);
+                scienceSubjectThreshold = config.GetValue<int>("PassingCriteria:ScienceSubjectThreshold", 160);
+                humanitiesSubjectThreshold = config.GetValue<int>("PassingCriteria:HumanitiesSubjectThreshold", 160);
+                subjectCount = config.GetValue<int>("PassingCriteria:SubjectCount", 5);
+                scienceDivision = config.GetValue<string>("ScienceDivision", "s");
+                humanitiesDivision = config.GetValue<string>("HumanitiesDivision", "l");
+
+                // Get the number of passing candidates
+                while (true)
+                {
+                    GetPassingCandidates();
+
+                    // Ask if the user wants to continue
+                    Console.Write("Do you want to process another cycle of examinees? (y/n): ");
+                    string response = Console.ReadLine().Trim().ToLower();
+
+                    if (response != "y")
+                    {
+                        break; // Exit the loop if the user enters anything other than "y"
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
         }
 
         //create a function to check if the student passed or not
@@ -92,7 +98,7 @@ namespace TapUEntranceChecker
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: " + ex.Message);
+                Console.WriteLine("An error occurred: " + ex.Message);
             }
         }
 
@@ -104,7 +110,7 @@ namespace TapUEntranceChecker
             // Extract data from the input
             string division = input[0];
             int[] subjectScores = new int[subjectCount];
-
+           
             // Parse subject scores
             for (int j = 0; j < subjectCount; j++)
             {
