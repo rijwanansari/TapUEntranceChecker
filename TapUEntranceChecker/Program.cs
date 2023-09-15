@@ -128,8 +128,8 @@ namespace TapUEntranceChecker
 
             if (totalScore >= examConfig.PassingCriteria.TotalScoreThreshold)
             {
-                if ((division == "s" && subjectScores[1] + subjectScores[2] >= examConfig.PassingCriteria.ScienceSubjectThreshold) ||
-                    (division == "l" && subjectScores[3] + subjectScores[4] >= examConfig.PassingCriteria.HumanitiesSubjectThreshold))
+                if ((division == examConfig.ScienceDivision && subjectScores[1] + subjectScores[2] >= examConfig.PassingCriteria.ScienceSubjectThreshold) ||
+                    (division == examConfig.HumanitiesDivision && subjectScores[3] + subjectScores[4] >= examConfig.PassingCriteria.HumanitiesSubjectThreshold))
                 {
                     passes = true;
                 }
