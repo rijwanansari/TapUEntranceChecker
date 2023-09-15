@@ -1,19 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipes;
+using TapUEntranceChecker.Model;
 
 namespace TapUEntranceChecker
 {
     internal class Program
     {
-        // private variables
-        private static int totalScoreThreshold;
-        private static int scienceSubjectThreshold;
-        private static int humanitiesSubjectThreshold;
-        private static int subjectCount;
-        private static string scienceDivision = "s";
-        private static string humanitiesDivision = "l";
-        private static int maxNumberOfStudents = 1000; // move to config file
+        private static ExamConfiguration examConfig;
+        private static int maxNumberOfStudents = 1000; // can move to config file
         static void Main(string[] args)
         {
             try
@@ -25,18 +21,19 @@ namespace TapUEntranceChecker
                     return;
                 }
 
-                // Setup configuration
-                IConfiguration config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .Build();
+                // Load and bind configuration
+                examConfig = LoadAndBindConfiguration();
 
-                // Read configuration values with null validation and default values
-                totalScoreThreshold = config.GetValue<int>("PassingCriteria:TotalScoreThreshold", 350);
-                scienceSubjectThreshold = config.GetValue<int>("PassingCriteria:ScienceSubjectThreshold", 160);
-                humanitiesSubjectThreshold = config.GetValue<int>("PassingCriteria:HumanitiesSubjectThreshold", 160);
-                subjectCount = config.GetValue<int>("PassingCriteria:SubjectCount", 5);
-                scienceDivision = config.GetValue<string>("ScienceDivision", "s");
-                humanitiesDivision = config.GetValue<string>("HumanitiesDivision", "l");
+                // Validate the configuration
+                List<string> validationErrors;
+                if (!ValidateExamConfiguration(examConfig, out validationErrors))
+                {
+                    foreach (string error in validationErrors)
+                    {
+                        Console.WriteLine("Configuration Validation Error: " + error);
+                    }
+                    return;
+                }
 
                 // Get the number of passing candidates
                 while (true)
@@ -49,7 +46,7 @@ namespace TapUEntranceChecker
 
                     if (response != "y")
                     {
-                        break; // Exit the loop if the user enters anything other than "y"
+                        break;
                     }
                 }
             }
@@ -59,7 +56,9 @@ namespace TapUEntranceChecker
             }
         }
 
-        //create a function to check if the student passed or not
+        /// <summary>
+        /// Get the number of passing candidates
+        /// </summary>
         private static void GetPassingCandidates()
         {
             try
@@ -82,10 +81,10 @@ namespace TapUEntranceChecker
                     // Read the input line
                     string[] input = Console.ReadLine().Split(' ');
 
-                    if(!ValidateInput(input, i + 1))
+                    if (!ValidateInput(input, i + 1))
                     {
                         return;
-                    }                    
+                    }
 
                     if (IsCandidatePass(input))
                     {
@@ -102,6 +101,11 @@ namespace TapUEntranceChecker
             }
         }
 
+        /// <summary>
+        /// Check if the candidate meets the passing conditions
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         private static bool IsCandidatePass(string[] input)
         {
             // Check if the candidate meets the passing conditions
@@ -109,10 +113,10 @@ namespace TapUEntranceChecker
 
             // Extract data from the input
             string division = input[0];
-            int[] subjectScores = new int[subjectCount];
-           
+            int[] subjectScores = new int[examConfig.SubjectCount];
+
             // Parse subject scores
-            for (int j = 0; j < subjectCount; j++)
+            for (int j = 0; j < examConfig.SubjectCount; j++)
             {
                 subjectScores[j] = int.Parse(input[j + 1]);
             }
@@ -124,10 +128,10 @@ namespace TapUEntranceChecker
                 totalScore += score;
             }
 
-            if (totalScore >= totalScoreThreshold)
+            if (totalScore >= examConfig.PassingCriteria.TotalScoreThreshold)
             {
-                if ((division == "s" && subjectScores[1] + subjectScores[2] >= scienceSubjectThreshold) ||
-                    (division == "l" && subjectScores[3] + subjectScores[4] >= humanitiesSubjectThreshold))
+                if ((division == "s" && subjectScores[1] + subjectScores[2] >= examConfig.PassingCriteria.ScienceSubjectThreshold) ||
+                    (division == "l" && subjectScores[3] + subjectScores[4] >= examConfig.PassingCriteria.HumanitiesSubjectThreshold))
                 {
                     passes = true;
                 }
@@ -136,10 +140,16 @@ namespace TapUEntranceChecker
             return passes;
         }
 
+        /// <summary>
+        /// Validate the input for each examinee
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="nth"></param>
+        /// <returns></returns>
         private static bool ValidateInput(string[] input, int nth)
         {
             //validate number of subjects
-            if (input.Length != subjectCount + 1)
+            if (input.Length != examConfig.SubjectCount + 1)
             {
                 Console.WriteLine("Invalid input format for examinee " + nth);
                 return false;
@@ -153,8 +163,8 @@ namespace TapUEntranceChecker
             }
 
             //validate subject scores
-            int[] subjectScores = new int[subjectCount];
-            for (int j = 0; j < subjectCount; j++)
+            int[] subjectScores = new int[examConfig.SubjectCount];
+            for (int j = 0; j < examConfig.SubjectCount; j++)
             {
                 subjectScores[j] = int.Parse(input[j + 1]);
 
@@ -167,5 +177,58 @@ namespace TapUEntranceChecker
 
             return true;
         }
+
+        /// <summary>
+        /// load and bind exam configuration
+        /// </summary>
+        /// <returns></returns>
+        static ExamConfiguration LoadAndBindConfiguration()
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var examConfig = new ExamConfiguration();
+
+            // Use the Get method to access configuration values
+            examConfig.PassingCriteria = new PassingCriteriaConfiguration
+            {
+                TotalScoreThreshold = config.GetValue<int>("PassingCriteria:TotalScoreThreshold"),
+                ScienceSubjectThreshold = config.GetValue<int>("PassingCriteria:ScienceSubjectThreshold"),
+                HumanitiesSubjectThreshold = config.GetValue<int>("PassingCriteria:HumanitiesSubjectThreshold"),
+            };
+
+            examConfig.ScienceDivision = config.GetValue<string>("ScienceDivision");
+            examConfig.HumanitiesDivision = config.GetValue<string>("HumanitiesDivision");
+            examConfig.SubjectCount = config.GetValue<int>("SubjectCount");
+
+            return examConfig;
+        }
+        /// <summary>
+        /// Validate exam configuration
+        /// </summary>
+        /// <param name="examConfig"></param>
+        /// <param name="validationErrors"></param>
+        /// <returns></returns>
+        static bool ValidateExamConfiguration(ExamConfiguration examConfig, out List<string> validationErrors)
+        {
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(examConfig);
+
+            bool isValid = Validator.TryValidateObject(examConfig, context, results, true);
+
+            validationErrors = new List<string>();
+
+            if (!isValid)
+            {
+                foreach (var validationResult in results)
+                {
+                    validationErrors.Add(validationResult.ErrorMessage);
+                }
+            }
+
+            return isValid;
+        }
+
     }
 }
