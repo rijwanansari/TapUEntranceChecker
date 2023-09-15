@@ -110,20 +110,10 @@ namespace TapUEntranceChecker
 
             // Extract data from the input
             string division = input[0];
-            int[] subjectScores = new int[examConfig.SubjectCount];
-
-            // Parse subject scores
-            for (int j = 0; j < examConfig.SubjectCount; j++)
-            {
-                subjectScores[j] = int.Parse(input[j + 1]);
-            }
+            int[] subjectScores = input.Skip(1).Select(int.Parse).ToArray();
 
             // Check the total score
-            int totalScore = 0;
-            foreach (int score in subjectScores)
-            {
-                totalScore += score;
-            }
+            int totalScore = subjectScores.Sum();
 
             if (totalScore >= examConfig.PassingCriteria.TotalScoreThreshold)
             {
@@ -153,7 +143,7 @@ namespace TapUEntranceChecker
             }
 
             //validate division
-            if (input[0] != "s" && input[0] != "l")
+            if (input[0] != examConfig.ScienceDivision && input[0] != examConfig.HumanitiesDivision)
             {
                 Console.WriteLine("Invalid division for examinee " + nth);
                 return false;
@@ -163,11 +153,9 @@ namespace TapUEntranceChecker
             int[] subjectScores = new int[examConfig.SubjectCount];
             for (int j = 0; j < examConfig.SubjectCount; j++)
             {
-                subjectScores[j] = int.Parse(input[j + 1]);
-
-                if (subjectScores[j] < 0 || subjectScores[j] > 100)
+                if (!int.TryParse(input[j + 1], out subjectScores[j]) || subjectScores[j] < 0 || subjectScores[j] > 100)
                 {
-                    Console.WriteLine("Invalid score for subject " + (j + 1) + " of examinee " + nth);
+                    Console.WriteLine($"Invalid score for subject {j + 1} of examinee {nth}.");
                     return false;
                 }
             }
