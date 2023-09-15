@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.IO.Pipes;
 using TapUEntranceChecker.Model;
 
 namespace TapUEntranceChecker
