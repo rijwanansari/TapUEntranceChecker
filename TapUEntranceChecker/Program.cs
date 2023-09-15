@@ -7,7 +7,6 @@ namespace TapUEntranceChecker
     internal class Program
     {
         private static ExamConfiguration examConfig;
-        private static int maxNumberOfStudents = 1000; // can move to config file
         static void Main(string[] args)
         {
             try
@@ -64,9 +63,9 @@ namespace TapUEntranceChecker
                 // Read the number of examinees
                 int N = int.Parse(Console.ReadLine());
                 //validate the number of examinees to be in the range of 1 to 100
-                if (N < 1 || N > maxNumberOfStudents)
+                if (N < 1 || N > examConfig.MaxNumberOfStudents)
                 {
-                    Console.WriteLine($"Invalid number of examinees. N should be between 1 and {maxNumberOfStudents}.");
+                    Console.WriteLine($"Invalid number of examinees. N should be between 1 and {examConfig.MaxNumberOfStudents}.");
                     return;
                 }
 
@@ -199,6 +198,7 @@ namespace TapUEntranceChecker
             examConfig.ScienceDivision = config.GetValue<string>("ScienceDivision");
             examConfig.HumanitiesDivision = config.GetValue<string>("HumanitiesDivision");
             examConfig.SubjectCount = config.GetValue<int>("SubjectCount");
+            examConfig.MaxNumberOfStudents = config.GetValue<int>("MaxNumberOfStudents");
 
             return examConfig;
         }

@@ -12,6 +12,8 @@ namespace TapUEntranceChecker.Model
         public string HumanitiesDivision { get; set; }
         [Required(ErrorMessage = "SubjectCount is missing in appsettings.json.")]
         public int SubjectCount { get; set; }
+        [Required(ErrorMessage = "MaxNumberOfStudents is missing in appsettings.json.")]
+        public int MaxNumberOfStudents { get; set; }
     }
 
     public class PassingCriteriaConfiguration
