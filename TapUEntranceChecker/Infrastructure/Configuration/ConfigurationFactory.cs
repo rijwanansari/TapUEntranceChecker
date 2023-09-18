@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace TapUEntranceChecker.App_Start
+namespace TapUEntranceChecker.Infrastructure.Configuration
 {
     public class ConfigurationFactory
     {
