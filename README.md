@@ -7,7 +7,9 @@ For the entrance examination of Tap University, which emphasizes comprehensive a
 Since the score of each subject of each examinee is entered, please find how many people can pass the two-stage selection.
 
 # Example
-![image](https://github.com/rijwanansari/TapUEntranceChecker/assets/25387035/60724463-79fb-4867-89f1-442528b2e08d)
 
-![image](https://github.com/rijwanansari/TapUEntranceChecker/assets/25387035/019302e8-f776-4bdb-a01c-04674c3527a7)
+![image](https://github.com/rijwanansari/TapUEntranceChecker/assets/25387035/25dfe021-8846-4a85-8641-c74b8adab27e)
+
+![image](https://github.com/rijwanansari/TapUEntranceChecker/assets/25387035/9f9798d9-8f3f-4d28-82e5-b1e5e9499136)
+
 
