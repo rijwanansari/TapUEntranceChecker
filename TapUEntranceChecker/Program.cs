@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel.DataAnnotations;
-using TapUEntranceChecker.App_Start;
-using TapUEntranceChecker.Core;
 using TapUEntranceChecker.Core.Common.Configuration;
 using TapUEntranceChecker.Core.Common.Validation;
 using TapUEntranceChecker.Core.Exam;

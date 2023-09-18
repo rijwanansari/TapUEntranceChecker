@@ -5,7 +5,7 @@ namespace TapUEntranceChecker.Core.Common.Validation
 {
     public class ValidationService : IValidationService
     {
-        public bool ValidateExamConfiguration(ExamConfiguration examConfig, out List<string> validationErrors)
+        public bool ValidateExamConfiguration(ExamPassConfiguration examConfig, out List<string> validationErrors)
         {
             var results = new List<ValidationResult>();
             var context = new ValidationContext(examConfig);
