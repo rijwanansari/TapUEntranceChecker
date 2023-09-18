@@ -2,24 +2,23 @@
 
 namespace TapUEntranceChecker.Model
 {
-    public class ExamConfiguration
+    /// <summary>
+    /// exam configuration model
+    /// </summary>
+    public class ExamPassConfiguration
     {
-        [Required(ErrorMessage = "PassingCriteria section is missing or incomplete in appsettings.json.")]
-        public PassingCriteriaConfiguration PassingCriteria { get; set; }
-        [Required(ErrorMessage = "ScienceDivision is missing in appsettings.json.")]
-        public string ScienceDivision { get; set; }
-        [Required(ErrorMessage = "HumanitiesDivision is missing in appsettings.json.")]
-        public string HumanitiesDivision { get; set; }
-        [Required(ErrorMessage = "SubjectCount is missing in appsettings.json.")]
-        public int SubjectCount { get; set; }
-        [Required(ErrorMessage = "MaxNumberOfStudents is missing in appsettings.json.")]
         public int MaxNumberOfStudents { get; set; }
-    }
-
-    public class PassingCriteriaConfiguration
-    {
         public int TotalScoreThreshold { get; set; }
-        public int ScienceSubjectThreshold { get; set; }
-        public int HumanitiesSubjectThreshold { get; set; }
+        public Dictionary<string, DivisionCondition> DivisionConditions { get; set; }
+        public List<string> Subjects { get; set; }
+    }
+    /// <summary>
+    /// division condition model
+    /// </summary>
+    public class DivisionCondition
+    {
+        public string Division { get; set; }
+        public int DivisionThreshold { get; set; }
+        public List<int> SubjectIndexPositions { get; set; }
     }
 }
