@@ -12,35 +12,13 @@ namespace TapUEntranceChecker.Core.Exam.Dto
         /// </summary>
         /// <param name="examPassConfiguration"></param>
         /// <returns></returns>
+        // validate division, subject length, subject scores
         public bool IsValidInput(ExamPassConfiguration examPassConfiguration)
         {
-            //validate division
-            if (!examPassConfiguration.DivisionConditions.ContainsKey(Division))
-            {
-                Console.WriteLine("Invalid division for examinee record.");
-                return false;
-            }
-
-            //validate input length
-            if (SubjectScores.Length != examPassConfiguration.Subjects.Count)
-            {
-                Console.WriteLine("Invalid input format for examinee record");
-                return false;
-            }
-
-            // validate subject scores
-            foreach (var subjectScore in SubjectScores)
-            {
-                if (subjectScore < 0 || subjectScore > 100)
-                {
-                    Console.WriteLine("Invalid subject score for examinee record");
-                    return false;
-                }
-            }
-
-            return true;
-            
+            var validator = new ExamineRecordValidator();
+            return validator.Validate(this, examPassConfiguration);
         }
+  
 
     }
 }
